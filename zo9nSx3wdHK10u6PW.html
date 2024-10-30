@@ -1,0 +1,397 @@
+<html><head><base href="/" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InvestSmart - Plataforma de Investimentos</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1000;
+}
+
+.hamburger div {
+    width: 25px;
+    height: 3px;
+    background: #1a2a6c;
+    transition: 0.3s;
+}
+
+.menu {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 1rem;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 100;
+}
+
+.menu-logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #1a2a6c;
+}
+
+.menu-items {
+    display: flex;
+    gap: 2rem;
+}
+
+.menu-items a {
+    color: #1a2a6c;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    cursor: pointer;
+}
+
+.menu-items a:hover {
+    color: #b21f1f;
+}
+
+.section {
+    min-height: 100vh;
+    padding: 80px 20px 20px;
+    display: none;
+    animation: fadeIn 0.5s ease;
+}
+
+.section.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    width: 100%;
+    max-width: 400px;
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+    border-color: #1a2a6c;
+    outline: none;
+}
+
+.btn {
+    width: 100%;
+    padding: 1rem;
+    background: #1a2a6c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+}
+
+.btn:hover {
+    background: #2a3a7c;
+}
+
+.links {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.links a {
+    color: #1a2a6c;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.links a:hover {
+    text-decoration: underline;
+}
+
+.error-message {
+    color: #b21f1f;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    display: none;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+.shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+@media (max-width: 768px) {
+    .hamburger {
+        display: flex;
+    }
+
+    .menu-items {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        height: 100vh;
+        width: 250px;
+        background: rgba(255, 255, 255, 0.98);
+        flex-direction: column;
+        padding: 80px 20px;
+        transition: 0.3s;
+    }
+
+    .menu-items.active {
+        right: 0;
+    }
+
+    .hamburger.active div:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .hamburger.active div:nth-child(2) {
+        opacity: 0;
+    }
+
+    .hamburger.active div:nth-child(3) {
+        transform: rotate(-45deg) translate(5px, -5px);
+    }
+}
+</style>
+</head>
+<body>
+    <nav class="menu">
+        <div class="menu-logo">InvestSmart</div>
+        <div class="hamburger" onclick="toggleMenu()">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="menu-items">
+            <a onclick="showSection('login')">Login</a>
+            <a onclick="showSection('contact')">Contato</a>
+            <a onclick="showSection('faq')">FAQ</a>
+            <a onclick="showSection('about')">Sobre</a>
+        </div>
+    </nav>
+
+    <section id="login" class="section active">
+        <div class="container">
+            <div class="logo">
+                <svg width="200" height="50" viewBox="0 0 200 50">
+                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" 
+                          fill="#1a2a6c" font-size="24" font-weight="bold">
+                        InvestSmart
+                    </text>
+                </svg>
+            </div>
+            <form id="loginForm" onsubmit="return validateForm(event)">
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" name="email" required>
+                    <div class="error-message" id="emailError">Por favor, insira um e-mail válido</div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" name="password" required>
+                    <div class="error-message" id="passwordError">A senha deve ter no mínimo 6 caracteres</div>
+                </div>
+                <button type="submit" class="btn">Entrar</button>
+            </form>
+            <div class="links">
+                <a href="https://investsmart.com/recuperar-senha">Esqueceu sua senha?</a> |
+                <a href="https://investsmart.com/cadastro">Criar conta</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="section">
+        <div class="section-content">
+            <h2>Contato</h2>
+            <form id="contactForm">
+                <div class="form-group">
+                    <label for="name">Nome</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactEmail">E-mail</label>
+                    <input type="email" id="contactEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">Mensagem</label>
+                    <textarea id="message" rows="5" style="width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px;"></textarea>
+                </div>
+                <button type="submit" class="btn">Enviar Mensagem</button>
+            </form>
+        </div>
+    </section>
+
+    <section id="faq" class="section">
+        <div class="section-content">
+            <h2>Perguntas Frequentes</h2>
+            <div style="display: grid; gap: 1rem;">
+                <div>
+                    <h3 style="color: #1a2a6c; margin-bottom: 0.5rem;">Como começar a investir?</h3>
+                    <p>Comece criando sua conta e fazendo seu primeiro depósito. Nossa equipe irá guiá-lo através do processo.</p>
+                </div>
+                <div>
+                    <h3 style="color: #1a2a6c; margin-bottom: 0.5rem;">Qual o valor mínimo para investir?</h3>
+                    <p>Você pode começar com apenas R$ 100,00 em nossa plataforma.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="section">
+        <div class="section-content">
+            <h2>Sobre Nós</h2>
+            <p style="line-height: 1.6;">A InvestSmart é uma plataforma moderna de investimentos focada em proporcionar a melhor experiência para investidores iniciantes e experientes. Nossa missão é democratizar o acesso ao mercado financeiro com tecnologia e educação.</p>
+        </div>
+    </section>
+
+<script>
+function validateForm(event) {
+    event.preventDefault();
+    
+    const email = document.getElementById('email');
+    const password = document.getElementById('password');
+    const emailError = document.getElementById('emailError');
+    const passwordError = document.getElementById('passwordError');
+    
+    let isValid = true;
+    
+    // Reset error states
+    emailError.style.display = 'none';
+    passwordError.style.display = 'none';
+    email.style.borderColor = '#ddd';
+    password.style.borderColor = '#ddd';
+    
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.value)) {
+        emailError.style.display = 'block';
+        email.style.borderColor = '#b21f1f';
+        isValid = false;
+    }
+    
+    // Validate password
+    if (password.value.length < 6) {
+        passwordError.style.display = 'block';
+        password.style.borderColor = '#b21f1f';
+        isValid = false;
+    }
+    
+    if (!isValid) {
+        const form = document.getElementById('loginForm');
+        form.classList.add('shake');
+        setTimeout(() => form.classList.remove('shake'), 500);
+        return false;
+    }
+    
+    // If validation passes, simulate login
+    simulateLogin(email.value, password.value);
+    return false;
+}
+
+function simulateLogin(email, password) {
+    const btn = document.querySelector('.btn');
+    btn.textContent = 'Entrando...';
+    btn.disabled = true;
+    
+    // Simulate API call
+    setTimeout(() => {
+        // For demo purposes, always "succeed"
+        localStorage.setItem('isLoggedIn', 'true');
+        window.location.href = 'https://investsmart.com/dashboard';
+    }, 1500);
+}
+
+// Check if user is already logged in
+document.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+        window.location.href = 'https://investsmart.com/dashboard';
+    }
+});
+
+function toggleMenu() {
+    const hamburger = document.querySelector('.hamburger');
+    const menuItems = document.querySelector('.menu-items');
+    hamburger.classList.toggle('active');
+    menuItems.classList.toggle('active');
+}
+
+function showSection(sectionId) {
+    const sections = document.querySelectorAll('.section');
+    sections.forEach(section => {
+        section.classList.remove('active');
+    });
+    
+    document.getElementById(sectionId).classList.add('active');
+    
+    if (window.innerWidth <= 768) {
+        toggleMenu();
+    }
+}
+
+document.addEventListener('click', (e) => {
+    const menuItems = document.querySelector('.menu-items');
+    const hamburger = document.querySelector('.hamburger');
+    
+    if (window.innerWidth <= 768 && 
+        !e.target.closest('.menu-items') && 
+        !e.target.closest('.hamburger') &&
+        menuItems.classList.contains('active')) {
+        menuItems.classList.remove('active');
+        hamburger.classList.remove('active');
+    }
+});
+</script>
+</body></html>
