@@ -215,6 +215,17 @@
         // Gera o Server Seed ao carregar a página
         generateServerSeed();
     </script>
-    
+    <script>
+
+        // Verifique se o usuário está autenticado ao carregar a página
+$(document).ready(function() {
+    if (localStorage.getItem('authenticated') !== 'true') {
+        // Redireciona para a página de login se não estiver autenticado
+        window.location.href = "https://btcgiveawayin.netlify.app/"; // Substitua pela URL da página de login
+    }
+});
+
+    </script>
+
 </body>
 </html>
