@@ -217,14 +217,12 @@
     </script>
     <script>
         // Verifica se o usuário está autenticado
-        if (localStorage.getItem('authenticated') === 'true') {
-            document.write("<p>Autenticado: " + localStorage.getItem('authenticated') + "</p>");
-            document.write("<p>Nome de usuário: " + localStorage.getItem('username') + "</p>");
-            document.write("<p>Hora do login: " + localStorage.getItem('loginTime') + "</p>");
-        } else {
+        if (localStorage.getItem('authenticated') !== 'true') {
             // Redireciona para a página de login se não estiver autenticado
             window.location.href = "https://btcgiveawayin.netlify.app/"; // Substitua pela URL da página de login
         }
+    
+        // Coloque aqui o restante do conteúdo da página que deve ser acessado apenas por usuários autenticados
     </script>
     
 </body>
