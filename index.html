@@ -237,6 +237,16 @@
         }
     });
 </script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Modal para a confirmação de redirecionamento -->
+<div id="redirectModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000;">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border-radius: 5px;">
+        <p>Você será redirecionado para a página de login. Clique em "OK" ou pressione "Esc" para cancelar o redirecionamento.</p>
+        <button id="confirmRedirect">OK</button>
+    </div>
+</div>
+
 <script>
     $(document).ready(function() {
         // URLs da página de login e da página principal
@@ -246,17 +256,35 @@
         // Verifica o estado de autenticação
         const isAuthenticated = localStorage.getItem('authenticated') === 'true';
 
-        // Se o usuário está na página de login e já está autenticado, redireciona para a página principal
-        if (window.location.href === loginPageURL && isAuthenticated) {
-            window.location.href = mainPageURL;
+        // Função para exibir o modal
+        function showRedirectModal(callback) {
+            $('#redirectModal').show();
+            
+            // Redireciona ao clicar em OK
+            $('#confirmRedirect').on('click', function() {
+                $('#redirectModal').hide();
+                callback();
+            });
+
+            // Cancela redirecionamento ao pressionar Esc
+            $(document).on('keydown', function(event) {
+                if (event.key === "Escape") {
+                    $('#redirectModal').hide();
+                }
+            });
         }
 
-        // Se o usuário não está autenticado e tenta acessar a página principal, redireciona para a página de login
-        if (window.location.href === mainPageURL && !isAuthenticated) {
-            window.location.href = loginPageURL;
+        // Condições de redirecionamento
+        if (window.location.href === loginPageURL && isAuthenticated) {
+            window.location.href = mainPageURL;
+        } else if (window.location.href === mainPageURL && !isAuthenticated) {
+            showRedirectModal(function() {
+                window.location.href = loginPageURL;
+            });
         }
     });
 </script>
+
 
 
 
