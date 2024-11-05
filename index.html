@@ -291,16 +291,9 @@
             unblockPage();
             callback();
         });
-
-        $(document).off('keydown').on('keydown', function(event) {
-            if (event.key === "Escape") {
-                $('#redirectModal').hide();
-                unblockPage();
-            }
-        });
     }
 
-    // Função para mostrar o modal de continuar
+    // Função para mostrar modal de continuar
     function showContinueModal() {
         blockPage();
         $('#continueModal').show();
@@ -310,27 +303,20 @@
             unblockPage();
             setTimeout(function() {
                 window.location.replace(mainPageURL);
-            }, 1000); 
-        });
-
-        $(document).off('keydown').on('keydown', function(event) {
-            if (event.key === "Escape") {
-                $('#continueModal').hide();
-                unblockPage();
-            }
+            }, 1000);
         });
     }
 
     // Redireciona com base na autenticação e na URL atual
     if (!isAuthenticated && window.location.href !== loginPageURL) {
-        // Redireciona para a página de login se não autenticado e não está na página de login
+        // Se o usuário não estiver autenticado e não estiver na página de login, redirecione para a página de login
         showRedirectModal(function() {
             setTimeout(function() {
                 window.location.replace(loginPageURL);
             }, 1000);
         });
-    } else if (isAuthenticated && window.location.href !== mainPageURL) {
-        // Redireciona para a página principal se autenticado e não está na página principal
+    } else if (isAuthenticated && window.location.href === loginPageURL) {
+        // Se o usuário estiver autenticado e na página de login, redirecione para a página principal
         window.location.replace(mainPageURL);
     }
 });
