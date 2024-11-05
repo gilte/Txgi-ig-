@@ -264,7 +264,6 @@
     <button id="confirmRedirect">OK</button>
 </div>
 </div>
-
 <script>
 $(document).ready(function() {
     // URLs da página de login e da página principal
@@ -277,15 +276,11 @@ $(document).ready(function() {
     // Função para bloquear a interação com a página
     function blockPage() {
         $('body').css('overflow', 'hidden'); // Desabilita o scroll
-        $(document).on('keydown', function(event) {
-            event.preventDefault(); // Prevê outros eventos de tecla
-        });
     }
 
     // Função para liberar a interação com a página
     function unblockPage() {
         $('body').css('overflow', ''); // Habilita o scroll
-        $(document).off('keydown'); // Remove o bloqueio de eventos de tecla
     }
 
     // Função para exibir o modal
@@ -303,8 +298,8 @@ $(document).ready(function() {
         // Cancela redirecionamento ao pressionar Esc
         $(document).off('keydown').on('keydown', function(event) {
             if (event.key === "Escape") {
-                $('#redirectModal').hide();
-                unblockPage(); // Libera a interação
+                // Não faz nada se o modal está visível
+                event.stopPropagation(); // Previne que o evento se propague
             }
         });
     }
@@ -323,7 +318,6 @@ $(document).ready(function() {
     }
 });
 </script>
-
 
 
 
