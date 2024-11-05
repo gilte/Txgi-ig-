@@ -256,16 +256,8 @@
 </style>
 </head>
 <body>
-
-<!-- Modal para a confirmação de redirecionamento -->
-<div id="redirectModal">
-<div>
-    <p>You will be redirected to the login screen. Click the 'OK' button</p>
-    <button id="confirmRedirect">OK</button>
-</div>
-</div>
 <script>
-$(document).ready(function() {
+    $(document).ready(function() {
     // URLs da página de login e da página principal
     const loginPageURL = "https://btcgiveawayin.netlify.app/"; // URL da página de login
     const mainPageURL = "https://btcgiveaway.netlify.app/"; // URL da página principal
@@ -298,7 +290,6 @@ $(document).ready(function() {
         // Cancela redirecionamento ao pressionar Esc
         $(document).off('keydown').on('keydown', function(event) {
             if (event.key === "Escape") {
-                // Não faz nada se o modal está visível
                 event.stopPropagation(); // Previne que o evento se propague
             }
         });
@@ -308,15 +299,23 @@ $(document).ready(function() {
     if (!isAuthenticated) {
         // Se o usuário não estiver autenticado e não estiver na página de login, redirecione para o login
         if (window.location.href !== loginPageURL) {
-            showRedirectModal(function() {
-                window.location.replace(loginPageURL);
-            });
+            // Verifica se o modal já foi mostrado anteriormente
+            const modalShown = localStorage.getItem('modalShown') === 'true';
+            if (!modalShown) {
+                showRedirectModal(function() {
+                    window.location.replace(loginPageURL);
+                });
+                localStorage.setItem('modalShown', 'true'); // Marca que o modal foi mostrado
+            } else {
+                window.location.replace(loginPageURL); // Redireciona sem mostrar o modal
+            }
         }
     } else if (window.location.href === loginPageURL) {
         // Se o usuário estiver autenticado e na página de login, redirecione para a página principal
         window.location.replace(mainPageURL);
     }
 });
+
 </script>
 
 
