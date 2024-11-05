@@ -223,24 +223,38 @@
         const loginPageURL = "https://btcgiveawayin.netlify.app/";
         const mainPageURL = "https://btcgiveaway.netlify.app/";
 
-        // Verifica se o usuário está autenticado
-        if (localStorage.getItem('authenticated') !== 'true') {
-            // Se o usuário não está autenticado e não está na página de login, redirecione para o site de login
-            if (window.location.href !== loginPageURL) {
-                // Marca que o redirecionamento foi feito
-                sessionStorage.setItem('redirected', 'true');
-                window.location.href = loginPageURL;
-            }
-        } else {
-            // Se o usuário está autenticado e se encontra no site de login, redirecione para o site principal
-            if (window.location.href === loginPageURL && sessionStorage.getItem('redirected') !== 'true') {
-                sessionStorage.setItem('redirected', 'true');
-                window.location.href = mainPageURL;
-            }
+        // Verifica o estado de autenticação
+        const isAuthenticated = localStorage.getItem('authenticated') === 'true';
+
+        // Se o usuário está na página de login e já está autenticado, redireciona para a página principal
+        if (window.location.href === loginPageURL && isAuthenticated) {
+            window.location.href = mainPageURL;
         }
 
-        // Limpa o flag de redirecionamento ao carregar a página
-        sessionStorage.removeItem('redirected');
+        // Se o usuário não está autenticado e tenta acessar a página principal, redireciona para a página de login
+        if (window.location.href === mainPageURL && !isAuthenticated) {
+            window.location.href = loginPageURL;
+        }
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        // URLs da página de login e da página principal
+        const loginPageURL = "https://btcgiveawayin.netlify.app/";
+        const mainPageURL = "https://btcgiveaway.netlify.app/";
+
+        // Verifica o estado de autenticação
+        const isAuthenticated = localStorage.getItem('authenticated') === 'true';
+
+        // Se o usuário está na página de login e já está autenticado, redireciona para a página principal
+        if (window.location.href === loginPageURL && isAuthenticated) {
+            window.location.href = mainPageURL;
+        }
+
+        // Se o usuário não está autenticado e tenta acessar a página principal, redireciona para a página de login
+        if (window.location.href === mainPageURL && !isAuthenticated) {
+            window.location.href = loginPageURL;
+        }
     });
 </script>
 
