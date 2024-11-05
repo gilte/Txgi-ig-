@@ -264,7 +264,7 @@
 </div>
 
 <script>
- $(document).ready(function() {
+$(document).ready(function() {
     // URLs da página de login e da página principal
     const loginPageURL = "https://btcgiveawayin.netlify.app/"; // URL da página de login
     const mainPageURL = "https://btcgiveaway.netlify.app/"; // URL da página principal
@@ -294,10 +294,10 @@
             callback();
         });
 
-        // Cancela redirecionamento ao pressionar Esc
+        // Previne que o redirecionamento seja cancelado
         $(document).off('keydown').on('keydown', function(event) {
             if (event.key === "Escape") {
-                event.stopPropagation(); // Previne que o evento se propague
+                event.stopPropagation(); // Previne o cancelamento do modal ao pressionar "Esc"
             }
         });
     }
@@ -312,10 +312,10 @@
             $('#continueModal').hide();
             unblockPage(); // Libera a interação
 
-            // Atraso no redirecionamento após fechar o modal
+            // Redireciona para a página principal após um atraso de 1 segundo
             setTimeout(function() {
-                window.location.replace(mainPageURL); // Redireciona para a página principal após 5 segundos
-            }, 5000); // Atraso de 5000 ms (5 segundos)
+                window.location.replace(mainPageURL);
+            }, 1000); // Atraso de 1 segundo
         });
 
         // Cancela a interação ao pressionar Esc
@@ -332,17 +332,17 @@
         // Se o usuário não estiver autenticado e não estiver na página de login, redirecione para o login
         if (window.location.href !== loginPageURL) {
             showRedirectModal(function() {
-                // Atraso no redirecionamento para a página de login
+                // Redireciona para a página de login após um atraso de 1 segundo
                 setTimeout(function() {
                     window.location.replace(loginPageURL);
-                }, 5000); // Atraso de 5000 ms (5 segundos)
+                }, 1000);
             });
         }
     } else if (window.location.href === loginPageURL) {
         // Se o usuário estiver autenticado e na página de login, redirecione para a página principal
         window.location.replace(mainPageURL);
-        // Após o redirecionamento, exibe o modal de continuar
-        setTimeout(showContinueModal, 500); // O modal aparece após um pequeno atraso
+        // Após o redirecionamento, exibe o modal de continuar após um pequeno atraso
+        setTimeout(showContinueModal, 500);
     }
 });
 
