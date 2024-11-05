@@ -264,85 +264,74 @@
 </div>
 
 <script>
-$(document).ready(function() {
-    // URLs da página de login e da página principal
-    const loginPageURL = "https://btcgiveawayin.netlify.app/"; // URL da página de login
-    const mainPageURL = "https://btcgiveaway.netlify.app/"; // URL da página principal
+    $(document).ready(function() {
+    const loginPageURL = "https://btcgiveawayin.netlify.app/";
+    const mainPageURL = "https://btcgiveaway.netlify.app/";
 
     // Verifica o estado de autenticação
     const isAuthenticated = localStorage.getItem('authenticated') === 'true';
 
     // Função para bloquear a interação com a página
     function blockPage() {
-        $('body').css('overflow', 'hidden'); // Desabilita o scroll
+        $('body').css('overflow', 'hidden');
     }
 
     // Função para liberar a interação com a página
     function unblockPage() {
-        $('body').css('overflow', ''); // Habilita o scroll
+        $('body').css('overflow', '');
     }
 
     // Função para exibir o modal de redirecionamento
     function showRedirectModal(callback) {
-        blockPage(); // Bloqueia a interação
+        blockPage();
         $('#redirectModal').show();
 
-        // Redireciona ao clicar em OK
         $('#confirmRedirect').off('click').on('click', function() {
             $('#redirectModal').hide();
-            unblockPage(); // Libera a interação
+            unblockPage();
             callback();
         });
 
-        // Cancela redirecionamento ao pressionar Esc
         $(document).off('keydown').on('keydown', function(event) {
             if (event.key === "Escape") {
-                event.stopPropagation(); // Previne que o evento se propague
+                $('#redirectModal').hide();
+                unblockPage();
             }
         });
     }
 
-    // Função para mostrar modal de continuar
+    // Função para mostrar o modal de continuar
     function showContinueModal() {
-        blockPage(); // Bloqueia a interação
+        blockPage();
         $('#continueModal').show();
 
-        // Fecha o modal ao clicar no botão de fechar
         $('#closeModal').off('click').on('click', function() {
             $('#continueModal').hide();
-            unblockPage(); // Libera a interação
-
-            // Atraso no redirecionamento após fechar o modal
+            unblockPage();
             setTimeout(function() {
-                window.location.replace(mainPageURL); // Redireciona para a página principal após 5 segundos
-            }, 5000); // Atraso de 5000 ms (5 segundos)
+                window.location.replace(mainPageURL);
+            }, 1000); 
         });
 
-        // Cancela a interação ao pressionar Esc
         $(document).off('keydown').on('keydown', function(event) {
             if (event.key === "Escape") {
                 $('#continueModal').hide();
-                unblockPage(); // Libera a interação
+                unblockPage();
             }
         });
     }
 
-    // Condições de redirecionamento
-    if (!isAuthenticated) {
-        // Se o usuário não estiver autenticado e não estiver na página de login, redirecione para o login
-        if (window.location.href !== loginPageURL) {
-            showRedirectModal(function() {
-                // Atraso no redirecionamento para a página de login
-                setTimeout(function() {
-                    window.location.replace(loginPageURL);
-                }, 5000); // Atraso de 5000 ms (5 segundos)
-            });
-        }
-    } else if (window.location.href === loginPageURL) {
-        // Se o usuário estiver autenticado e na página de login, redirecione para a página principal
+    // Redireciona com base na autenticação e na URL atual
+    if (!isAuthenticated && window.location.href !== loginPageURL) {
+        // Redireciona para a página de login se não autenticado e não está na página de login
+        showRedirectModal(function() {
+            setTimeout(function() {
+                window.location.replace(loginPageURL);
+            }, 1000);
+        });
+    } else if (isAuthenticated && window.location.href !== mainPageURL) {
+        // Redireciona para a página principal se autenticado e não está na página principal
         window.location.replace(mainPageURL);
-        // Após o redirecionamento, exibe o modal de continuar
-        setTimeout(showContinueModal, 500); // O modal aparece após um pequeno atraso
     }
 });
 
