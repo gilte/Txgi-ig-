@@ -290,7 +290,6 @@
         // Cancela redirecionamento ao pressionar Esc
         $(document).off('keydown').on('keydown', function(event) {
             if (event.key === "Escape") {
-                // Não faz nada se o modal está visível
                 event.stopPropagation(); // Previne que o evento se propague
             }
         });
@@ -308,8 +307,9 @@
                 });
                 localStorage.setItem('modalShown', 'true'); // Marca que o modal foi mostrado
             } else {
+                // Redireciona imediatamente se o modal já tiver sido mostrado
                 setTimeout(function() {
-                    window.location.replace(loginPageURL); // Redireciona sem mostrar o modal após um atraso
+                    window.location.replace(loginPageURL); // Redireciona após um atraso
                 }, 500); // Atraso de 500ms
             }
         }
