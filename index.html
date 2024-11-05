@@ -257,7 +257,7 @@
 </head>
 <body>
 <script>
-    $(document).ready(function() {
+$(document).ready(function() {
     // URLs da página de login e da página principal
     const loginPageURL = "https://btcgiveawayin.netlify.app/"; // URL da página de login
     const mainPageURL = "https://btcgiveaway.netlify.app/"; // URL da página principal
@@ -295,6 +295,11 @@
         });
     }
 
+    // Função para mostrar mensagem após o login
+    function showContinueMessage() {
+        alert("Pressione 'Esc' para continuar."); // Você pode alterar para um modal se preferir
+    }
+
     // Condições de redirecionamento
     if (!isAuthenticated) {
         // Se o usuário não estiver autenticado e não estiver na página de login, redirecione para o login
@@ -316,6 +321,8 @@
     } else if (window.location.href === loginPageURL) {
         // Se o usuário estiver autenticado e na página de login, redirecione para a página principal
         window.location.replace(mainPageURL);
+        // Após o redirecionamento, exibe a mensagem para continuar
+        setTimeout(showContinueMessage, 500); // A mensagem aparece após um pequeno atraso
     }
 });
 
