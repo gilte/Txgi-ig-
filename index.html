@@ -265,47 +265,89 @@
 
 <script>
  $(document).ready(function() {
-    const loginPageURL = "https://btcgiveawayin.netlify.app/";
-    const mainPageURL = "https://btcgiveaway.netlify.app/";
+    // URLs da página de login e da página principal
+    const loginPageURL = "https://btcgiveawayin.netlify.app/"; // URL da página de login
+    const mainPageURL = "https://btcgiveaway.netlify.app/"; // URL da página principal
 
     // Verifica o estado de autenticação
     const isAuthenticated = localStorage.getItem('authenticated') === 'true';
 
     // Função para bloquear a interação com a página
     function blockPage() {
-        $('body').css('overflow', 'hidden');
+        $('body').css('overflow', 'hidden'); // Desabilita o scroll
     }
 
     // Função para liberar a interação com a página
     function unblockPage() {
-        $('body').css('overflow', '');
+        $('body').css('overflow', ''); // Habilita o scroll
     }
 
-    // Função de redirecionamento para login se não estiver autenticado
-    function redirectToLogin() {
-        blockPage();
+    // Função para exibir o modal de redirecionamento
+    function showRedirectModal(callback) {
+        blockPage(); // Bloqueia a interação
         $('#redirectModal').show();
 
-        // Redireciona após clicar em OK, sem interferência de tecla Esc
+        // Redireciona ao clicar em OK
         $('#confirmRedirect').off('click').on('click', function() {
             $('#redirectModal').hide();
-            unblockPage();
-            window.location.replace(loginPageURL);
+            unblockPage(); // Libera a interação
+            callback();
+        });
+
+        // Cancela redirecionamento ao pressionar Esc
+        $(document).off('keydown').on('keydown', function(event) {
+            if (event.key === "Escape") {
+                event.stopPropagation(); // Previne que o evento se propague
+            }
         });
     }
 
-    // Removemos a escuta da tecla Esc para garantir que o redirecionamento ocorra
-    $(document).off('keydown');
+    // Função para mostrar modal de continuar
+    function showContinueModal() {
+        blockPage(); // Bloqueia a interação
+        $('#continueModal').show();
 
-    // Lógica principal de redirecionamento
-    if (!isAuthenticated && window.location.href !== loginPageURL) {
-        // Se não autenticado e não estiver na página de login, redireciona para login
-        redirectToLogin();
-    } else if (isAuthenticated && window.location.href === loginPageURL) {
-        // Se autenticado e na página de login, redireciona para a página principal
+        // Fecha o modal ao clicar no botão de fechar
+        $('#closeModal').off('click').on('click', function() {
+            $('#continueModal').hide();
+            unblockPage(); // Libera a interação
+
+            // Atraso no redirecionamento após fechar o modal
+            setTimeout(function() {
+                window.location.replace(mainPageURL); // Redireciona para a página principal após 5 segundos
+            }, 5000); // Atraso de 5000 ms (5 segundos)
+        });
+
+        // Cancela a interação ao pressionar Esc
+        $(document).off('keydown').on('keydown', function(event) {
+            if (event.key === "Escape") {
+                $('#continueModal').hide();
+                unblockPage(); // Libera a interação
+            }
+        });
+    }
+
+    // Condições de redirecionamento
+    if (!isAuthenticated) {
+        // Se o usuário não estiver autenticado e não estiver na página de login, redirecione para o login
+        if (window.location.href !== loginPageURL) {
+            showRedirectModal(function() {
+                // Atraso no redirecionamento para a página de login
+                setTimeout(function() {
+                    window.location.replace(loginPageURL);
+                }, 5000); // Atraso de 5000 ms (5 segundos)
+            });
+        }
+    } else if (window.location.href === loginPageURL) {
+        // Se o usuário estiver autenticado e na página de login, redirecione para a página principal
         window.location.replace(mainPageURL);
+        // Após o redirecionamento, exibe o modal de continuar
+        setTimeout(showContinueModal, 500); // O modal aparece após um pequeno atraso
     }
 });
+
+
+    
 
 </script>
 
