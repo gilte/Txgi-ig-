@@ -217,23 +217,27 @@
         // Gera o Server Seed ao carregar a página
         generateServerSeed();
     </script>
-    <script>
-
-    
+   <script>
     $(document).ready(function() {
-        // URL da página de login
+        // URLs da página de login e da página principal
         const loginPageURL = "https://btcgiveawayin.netlify.app/";
+        const mainPageURL = "https://btcgiveaway.netlify.app/";
 
-        // Verifique se o usuário está autenticado
+        // Verifica se o usuário está autenticado
         if (localStorage.getItem('authenticated') !== 'true') {
-            // Se o usuário não estiver autenticado e não estiver na página de login, redirecione
+            // Se o usuário não está autenticado e não está na página de login, redirecione para o site de login
             if (window.location.href !== loginPageURL) {
                 window.location.href = loginPageURL;
             }
+        } else {
+            // Se o usuário está autenticado e se encontra no site de login, redirecione para o site principal
+            if (window.location.href === loginPageURL) {
+                window.location.href = mainPageURL;
+            }
         }
     });
-
 </script>
+
 
 </body>
 </html>
