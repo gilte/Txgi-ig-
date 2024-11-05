@@ -214,7 +214,7 @@
             }
         });
 
-        // Gera o Server Seed ao carregar a página
+        // Gera Server Seed ao carregar a página
         generateServerSeed();
     </script>
    <script>
@@ -223,8 +223,18 @@
         const loginPageURL = "https://btcgiveawayin.netlify.app/";
         const mainPageURL = "https://btcgiveaway.netlify.app/";
 
+<<<<<<< HEAD
+        // Verifique se o usuário está autenticado ao carregar a página
+$(document).ready(function() {
+    if (localStorage.getItem('authenticated') !== 'true') {
+        // Redireciona para a página de login se não estiver autenticado
+        window.location.href = "https://btcgiveawayin.netlify.app/"; // Sbstitua pela URL da página de login
+    }
+});
+=======
         // Verifica o estado de autenticação
         const isAuthenticated = localStorage.getItem('authenticated') === 'true';
+>>>>>>> fc404ab78bbeb196b9c8af96ff38393e79d01a4b
 
         // Se o usuário está na página de login e já está autenticado, redireciona para a página principal
         if (window.location.href === loginPageURL && isAuthenticated) {
@@ -236,7 +246,7 @@
             window.location.href = loginPageURL;
         }
     });
-<!-- Modal para a confirmação de redirecionamento -->
+    <!-- Modal para a confirmação de redirecionamento -->
 <div id="redirectModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000;">
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border-radius: 5px;">
         <p>Você será redirecionado para a página de login. Clique em "OK" ou pressione "Esc" para cancelar o redirecionamento.</p>
@@ -295,6 +305,9 @@
             showRedirectModal(function() {
                 window.location.replace(loginPageURL);
             });
+        } else if (window.location.href !== loginPageURL && !isAuthenticated) {
+            // Se o usuário não estiver autenticado e não estiver na página de login, redirecione para o login
+            window.location.replace(loginPageURL);
         }
     });
 </script>
