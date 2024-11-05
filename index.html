@@ -264,7 +264,7 @@
 </div>
 
 <script>
-    $(document).ready(function() {
+   $(document).ready(function() {
     const loginPageURL = "https://btcgiveawayin.netlify.app/";
     const mainPageURL = "https://btcgiveaway.netlify.app/";
 
@@ -281,16 +281,20 @@
         $('body').css('overflow', '');
     }
 
-    // Função para exibir o modal de redirecionamento
+    // Função para exibir o modal de redirecionamento sem interferência do Esc
     function showRedirectModal(callback) {
         blockPage();
         $('#redirectModal').show();
 
+        // Evento para confirmar o redirecionamento ao clicar em OK
         $('#confirmRedirect').off('click').on('click', function() {
             $('#redirectModal').hide();
             unblockPage();
             callback();
         });
+
+        // Remove qualquer evento de tecla Esc para garantir o redirecionamento
+        $(document).off('keydown');
     }
 
     // Função para mostrar modal de continuar
