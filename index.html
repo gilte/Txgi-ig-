@@ -236,7 +236,6 @@
             window.location.href = loginPageURL;
         }
     });
-</script>
 <!-- Modal para a confirmação de redirecionamento -->
 <div id="redirectModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000;">
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border-radius: 5px;">
@@ -249,18 +248,34 @@
     $(document).ready(function() {
         // URLs da página de login e da página principal
         const loginPageURL = "https://btcgiveawayin.netlify.app/";
-        const mainPageURL = "https://btcgiveaway.netlify.app/";
+        const mainPageURL = "https://btcgiveawayin.netlify.app/"; // Verifique se a URL está correta
 
         // Verifica o estado de autenticação
         const isAuthenticated = localStorage.getItem('authenticated') === 'true';
 
+        // Função para bloquear a interação com a página
+        function blockPage() {
+            $('body').css('overflow', 'hidden'); // Desabilita o scroll
+            $(document).on('keydown', function(event) {
+                event.preventDefault(); // Prevê outros eventos de tecla
+            });
+        }
+
+        // Função para liberar a interação com a página
+        function unblockPage() {
+            $('body').css('overflow', ''); // Habilita o scroll
+            $(document).off('keydown'); // Remove o bloqueio de eventos de tecla
+        }
+
         // Função para exibir o modal
         function showRedirectModal(callback) {
+            blockPage(); // Bloqueia a interação
             $('#redirectModal').show();
-            
+
             // Redireciona ao clicar em OK
             $('#confirmRedirect').on('click', function() {
                 $('#redirectModal').hide();
+                unblockPage(); // Libera a interação
                 callback();
             });
 
@@ -268,16 +283,17 @@
             $(document).on('keydown', function(event) {
                 if (event.key === "Escape") {
                     $('#redirectModal').hide();
+                    unblockPage(); // Libera a interação
                 }
             });
         }
 
         // Condições de redirecionamento
         if (window.location.href === loginPageURL && isAuthenticated) {
-            window.location.href = mainPageURL;
+            window.location.replace(mainPageURL);
         } else if (window.location.href === mainPageURL && !isAuthenticated) {
             showRedirectModal(function() {
-                window.location.href = loginPageURL;
+                window.location.replace(loginPageURL);
             });
         }
     });
