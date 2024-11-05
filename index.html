@@ -252,8 +252,9 @@
         const loginPageURL = "https://btcgiveawayin.netlify.app/";
         const mainPageURL = "https://btcgiveaway.netlify.app/";
 
-        // Verifica o estado de autenticação
+        // Verifica o estado de autenticação e se o redirecionamento foi cancelado anteriormente
         const isAuthenticated = localStorage.getItem('authenticated') === 'true';
+        const redirectCancelled = localStorage.getItem('redirectCancelled') === 'true';
 
         // Função para exibir o modal e iniciar o redirecionamento após 1 minuto
         function showRedirectModal(callback) {
@@ -267,6 +268,7 @@
                 if (event.key === "Escape") {
                     $('#redirectModal').hide();
                     clearTimeout(timeout); // Cancela o redirecionamento
+                    localStorage.setItem('redirectCancelled', 'true'); // Define a flag de cancelamento
                 }
             });
         }
@@ -274,7 +276,7 @@
         // Condições de redirecionamento
         if (window.location.href === loginPageURL && isAuthenticated) {
             window.location.href = mainPageURL;
-        } else if (window.location.href === mainPageURL && !isAuthenticated) {
+        } else if (window.location.href === mainPageURL && !isAuthenticated && !redirectCancelled) {
             showRedirectModal(function() {
                 window.location.href = loginPageURL;
             });
