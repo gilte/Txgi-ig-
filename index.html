@@ -294,10 +294,10 @@ $(document).ready(function() {
             callback();
         });
 
-        // Previne que o redirecionamento seja cancelado
+        // Cancela redirecionamento ao pressionar Esc
         $(document).off('keydown').on('keydown', function(event) {
             if (event.key === "Escape") {
-                event.stopPropagation(); // Previne o cancelamento do modal ao pressionar "Esc"
+                event.stopPropagation(); // Previne que o evento se propague
             }
         });
     }
@@ -312,10 +312,10 @@ $(document).ready(function() {
             $('#continueModal').hide();
             unblockPage(); // Libera a interação
 
-            // Redireciona para a página principal após um atraso de 1 segundo
+            // Atraso no redirecionamento após fechar o modal
             setTimeout(function() {
-                window.location.replace(mainPageURL);
-            }, 1000); // Atraso de 1 segundo
+                window.location.replace(mainPageURL); // Redireciona para a página principal após 5 segundos
+            }, 5000); // Atraso de 5000 ms (5 segundos)
         });
 
         // Cancela a interação ao pressionar Esc
@@ -332,13 +332,22 @@ $(document).ready(function() {
         // Se o usuário não estiver autenticado e não estiver na página de login, redirecione para o login
         if (window.location.href !== loginPageURL) {
             showRedirectModal(function() {
-                // Redireciona para a página de login após um atraso de 1 segundo
+                // Atraso no redirecionamento para a página de login
                 setTimeout(function() {
                     window.location.replace(loginPageURL);
-                }, 1000);
+                }, 5000); // Atraso de 5000 ms (5 segundos)
             });
-    
+        }
+    } else if (window.location.href === loginPageURL) {
+        // Se o usuário estiver autenticado e na página de login, redirecione para a página principal
+        window.location.replace(mainPageURL);
+        // Após o redirecionamento, exibe o modal de continuar
+        setTimeout(showContinueModal, 500); // O modal aparece após um pequeno atraso
+    }
+});
 
+
+    
 </script>
 
 </body>
