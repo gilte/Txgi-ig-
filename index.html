@@ -242,8 +242,7 @@
 <!-- Modal para a confirmação de redirecionamento -->
 <div id="redirectModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1000;">
     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border-radius: 5px;">
-        <p>You will be redirected to the login page. Press "Esc" .</p>
-        
+        <p>You will be redirected to the login page. Press "Esc" to cancel the redirection.</p>
     </div>
 </div>
 
@@ -256,20 +255,18 @@
         // Verifica o estado de autenticação
         const isAuthenticated = localStorage.getItem('authenticated') === 'true';
 
-        // Função para exibir o modal
+        // Função para exibir o modal e iniciar o redirecionamento após 1 minuto
         function showRedirectModal(callback) {
             $('#redirectModal').show();
-            
-            // Redireciona ao clicar em OK
-            $('#confirmRedirect').on('click', function() {
-                $('#redirectModal').hide();
-                callback();
-            });
+
+            // Redireciona automaticamente após 60 segundos (1 minuto)
+            const timeout = setTimeout(callback, 60000);
 
             // Cancela redirecionamento ao pressionar Esc
             $(document).on('keydown', function(event) {
                 if (event.key === "Escape") {
                     $('#redirectModal').hide();
+                    clearTimeout(timeout); // Cancela o redirecionamento
                 }
             });
         }
@@ -284,6 +281,7 @@
         }
     });
 </script>
+
 
 
 
