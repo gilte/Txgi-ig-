@@ -219,15 +219,21 @@
     </script>
     <script>
 
-        // Verifique se o usuário está autenticado ao carregar a página
-$(document).ready(function() {
-    if (localStorage.getItem('authenticated') !== 'true') {
-        // Redireciona para a página de login se não estiver autenticado
-        window.location.href = "https://btcgiveawayin.netlify.app/"; // Substitua pela URL da página de login
-    }
-});
+    
+    $(document).ready(function() {
+        // URL da página de login
+        const loginPageURL = "https://btcgiveawayin.netlify.app/";
 
-    </script>
+        // Verifique se o usuário está autenticado
+        if (localStorage.getItem('authenticated') !== 'true') {
+            // Se o usuário não estiver autenticado e não estiver na página de login, redirecione
+            if (window.location.href !== loginPageURL) {
+                window.location.href = loginPageURL;
+            }
+        }
+    });
+
+</script>
 
 </body>
 </html>
