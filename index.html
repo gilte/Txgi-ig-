@@ -217,135 +217,107 @@
         // Gera Server Seed ao carregar a página
         generateServerSeed();
     </script>
-   <style>
+    <style>
+        #redirectModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        #redirectModal > div {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        #confirmRedirect {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #confirmRedirect:hover {
+            background-color: #45a049; /* Cor do botão ao passar o mouse */
+        }
+    </style>
 
-#continueModal {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-
-.modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    text-align: center;
-}
-
-.close-button {
-    cursor: pointer;
-    float: right;
-    font-size: 20px;
-    font-weight: bold;
-}
-
-</style>
-
-</head>
-<body>
-    <div id="continueModal" style="display: none;">
-        <div class="modal-content">
-            <span class="close-button" id="closeModal">&times;</span>
-            <p>Pressione 'Esc' para continuar.</p>
-        </div>
+<!-- Modal para a confirmação de redirecionamento -->
+<div id="redirectModal">
+    <div>
+        <p>You will be redirected to the login screen. Click the 'OK' button</p>
+        <button id="confirmRedirect">OK</button>
     </div>
-    
+</div>
+
 <script>
     $(document).ready(function() {
-    // URLs da página de login e da página principal
-    const loginPageURL = "https://btcgiveawayin.netlify.app/"; // URL da página de login
-    const mainPageURL = "https://btcgiveaway.netlify.app/"; // URL da página principal
+        // URLs da página de login e da página principal
+        const loginPageURL = "https://btcgiveawayin.netlify.app/"; // URL da página de login
+        const mainPageURL = "https://btcgiveaway.netlify.app/"; // URL da página principal
 
-    // Verifica o estado de autenticação
-    const isAuthenticated = localStorage.getItem('authenticated') === 'true';
+        // Verifica o estado de autenticação
+        const isAuthenticated = localStorage.getItem('authenticated') === 'true';
 
-    // Função para bloquear a interação com a página
-    function blockPage() {
-        $('body').css('overflow', 'hidden'); // Desabilita o scroll
-    }
+        // Função para bloquear a interação com a página
+        function blockPage() {
+            $('body').css('overflow', 'hidden'); // Desabilita o scroll
+        }
 
-    // Função para liberar a interação com a página
-    function unblockPage() {
-        $('body').css('overflow', ''); // Habilita o scroll
-    }
+        // Função para liberar a interação com a página
+        function unblockPage() {
+            $('body').css('overflow', ''); // Habilita o scroll
+        }
 
-    // Função para exibir o modal
-    function showRedirectModal(callback) {
-        blockPage(); // Bloqueia a interação
-        $('#redirectModal').show();
+        // Função para exibir o modal
+        function showRedirectModal(callback) {
+            blockPage(); // Bloqueia a interação
+            $('#redirectModal').show();
 
-        // Redireciona ao clicar em OK
-        $('#confirmRedirect').off('click').on('click', function() {
-            $('#redirectModal').hide();
-            unblockPage(); // Libera a interação
-            callback();
-        });
-
-        // Cancela redirecionamento ao pressionar Esc
-        $(document).off('keydown').on('keydown', function(event) {
-            if (event.key === "Escape") {
-                event.stopPropagation(); // Previne que o evento se propague
-            }
-        });
-    }
-
-    // Função para mostrar modal de continuar
-    function showContinueModal() {
-        blockPage(); // Bloqueia a interação
-        $('#continueModal').show();
-
-        // Fecha o modal ao clicar no botão de fechar
-        $('#closeModal').off('click').on('click', function() {
-            $('#continueModal').hide();
-            unblockPage(); // Libera a interação
-        });
-
-        // Cancela a interação ao pressionar Esc
-        $(document).off('keydown').on('keydown', function(event) {
-            if (event.key === "Escape") {
-                $('#continueModal').hide();
+            // Redireciona ao clicar em OK
+            $('#confirmRedirect').off('click').on('click', function() {
+                $('#redirectModal').hide();
                 unblockPage(); // Libera a interação
-            }
-        });
-    }
+                callback();
+            });
 
-    // Condições de redirecionamento
-    if (!isAuthenticated) {
-        // Se o usuário não estiver autenticado e não estiver na página de login, redirecione para o login
-        if (window.location.href !== loginPageURL) {
-            // Verifica se o modal já foi mostrado anteriormente
-            const modalShown = localStorage.getItem('modalShown') === 'true';
-            if (!modalShown) {
+            // Cancela redirecionamento ao pressionar Esc
+            $(document).off('keydown').on('keydown', function(event) {
+                if (event.key === "Escape") {
+                    // Não faz nada se o modal está visível
+                    event.stopPropagation(); // Previne que o evento se propague
+                }
+            });
+        }
+
+        // Condições de redirecionamento
+        if (!isAuthenticated) {
+            // Se o usuário não estiver autenticado e não estiver na página de login, redirecione para o login
+            if (window.location.href !== loginPageURL) {
                 showRedirectModal(function() {
                     window.location.replace(loginPageURL);
                 });
-                localStorage.setItem('modalShown', 'true'); // Marca que o modal foi mostrado
-            } else {
-                // Redireciona imediatamente se o modal já tiver sido mostrado
-                setTimeout(function() {
-                    window.location.replace(loginPageURL); // Redireciona após um atraso
-                }, 500); // Atraso de 500ms
             }
+        } else if (window.location.href === loginPageURL) {
+            // Se o usuário estiver autenticado e na página de login, redirecione para a página principal
+            window.location.replace(mainPageURL);
         }
-    } else if (window.location.href === loginPageURL) {
-        // Se o usuário estiver autenticado e na página de login, redirecione para a página principal
-        window.location.replace(mainPageURL);
-        // Após o redirecionamento, exibe o modal de continuar
-        setTimeout(showContinueModal, 500); // O modal aparece após um pequeno atraso
-    }
-});
-
-
+    });
 </script>
-
-
 
 </body>
 </html>
+  
