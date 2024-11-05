@@ -227,16 +227,23 @@
         if (localStorage.getItem('authenticated') !== 'true') {
             // Se o usuário não está autenticado e não está na página de login, redirecione para o site de login
             if (window.location.href !== loginPageURL) {
+                // Marca que o redirecionamento foi feito
+                sessionStorage.setItem('redirected', 'true');
                 window.location.href = loginPageURL;
             }
         } else {
             // Se o usuário está autenticado e se encontra no site de login, redirecione para o site principal
-            if (window.location.href === loginPageURL) {
+            if (window.location.href === loginPageURL && sessionStorage.getItem('redirected') !== 'true') {
+                sessionStorage.setItem('redirected', 'true');
                 window.location.href = mainPageURL;
             }
         }
+
+        // Limpa o flag de redirecionamento ao carregar a página
+        sessionStorage.removeItem('redirected');
     });
 </script>
+
 
 
 </body>
