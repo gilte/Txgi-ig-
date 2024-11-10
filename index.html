@@ -131,10 +131,7 @@
             background-color: #333;
         }
     </style>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 </head>
 
 <body>
@@ -164,6 +161,8 @@
             <button id="resetBtn" class="button">Reset</button>
         </div>
     </div>
+
+
     <script>
         const namesWheel = document.getElementById("namesWheel");
         const startBtn = document.getElementById("startBtn");
@@ -172,9 +171,6 @@
         const serverSeedReveal = document.getElementById("serverSeed");
         const clientSeedOutput = document.getElementById("clientSeed");
         const finalHashOutput = document.getElementById("finalHash");
-        const verifyBtn = document.getElementById("verifyBtn");
-        const verifyHash = document.getElementById("verifyHash");
-        const verifyResult = document.getElementById("verifyResult");
 
         let interval;
         let serverSeed;
@@ -182,25 +178,32 @@
         let clientSeed;
         let finalHash;
 
-        // Gerar Server Seed e Server Seed Hash
+        // Defina o índice manual do vencedor (-1 para aleatório)
+        const manualWinnerIndex = 1; // Define aqui o índice desejado para fins didáticos
+
         function generateServerSeed() {
             serverSeed = Math.random().toString(36).substring(2);
             serverSeedHash = CryptoJS.SHA256(serverSeed).toString();
             serverSeedHashDisplay.innerHTML = serverSeedHash;
         }
 
-        // Função para obter os nomes da entrada de texto
         function getNamesFromInput() {
             const namesInput = document.getElementById("namesInput").value;
             return namesInput.split(',').map(name => name.trim()).filter(name => name !== "");
         }
 
-        // Função para escolher um vencedor combinando Server Seed + Client Seed
         function chooseWinner(names) {
-            clientSeed = Date.now().toString(); // Certifique-se de que o client seed seja uma string
-            const combinedSeed = serverSeed + clientSeed; // Combina o server seed e o client seed
-            finalHash = CryptoJS.SHA256(combinedSeed).toString(); // Gera o hash
-            const index = parseInt(finalHash.substring(0, 8), 16) % names.length; // Calcula o índice do vencedor
+            clientSeed = Date.now().toString();
+            const combinedSeed = serverSeed + clientSeed;
+            finalHash = CryptoJS.SHA256(combinedSeed).toString();
+
+            let index;
+            if (manualWinnerIndex >= 0 && manualWinnerIndex < names.length) {
+                index = manualWinnerIndex;  // Define o vencedor manualmente
+            } else {
+                index = parseInt(finalHash.substring(0, 8), 16) % names.length;
+            }
+
             return { winner: names[index], finalHash, clientSeed };
         }
 
@@ -211,26 +214,23 @@
                 return;
             }
 
-            // Atualizar animação de sorteio
             namesWheel.style.animation = "spin 1s linear infinite";
             interval = setInterval(() => {
                 const randomIndex = Math.floor(Math.random() * names.length);
                 namesWheel.innerHTML = names[randomIndex];
             }, 100);
 
-            // Sorteio após 1 minuto
             setTimeout(() => {
                 clearInterval(interval);
                 namesWheel.style.animation = "none";
 
-                const result = chooseWinner(names); // Chama a função para escolher o vencedor
-                // Revelar Server Seed e mostrar resultados
+                const result = chooseWinner(names);
                 document.getElementById("serverSeedReveal").style.display = "block";
                 serverSeedReveal.innerHTML = serverSeed;
                 clientSeedOutput.innerHTML = clientSeed;
                 finalHashOutput.innerHTML = finalHash;
                 namesWheel.innerHTML = `The winner: ${result.winner}`;
-            }, 60000); // Ajuste o tempo conforme necessário
+            }, 20000);
         });
 
         resetBtn.addEventListener("click", () => {
@@ -238,32 +238,12 @@
             namesWheel.innerHTML = "";
             clientSeedOutput.innerHTML = "";
             finalHashOutput.innerHTML = "";
-            verifyResult.innerHTML = "";
-            verifyHash.value = "";
             document.getElementById("serverSeedReveal").style.display = "none";
             generateServerSeed();
         });
 
-        // Verificação de vencedor com o Server Seed e o Client Seed
-        verifyBtn.addEventListener("click", () => {
-            const names = getNamesFromInput();
-            const [inputServerSeed, inputClientSeed] = verifyHash.value.split(" ");
-            if (inputServerSeed && inputClientSeed) {
-                const combinedSeed = inputServerSeed + inputClientSeed;
-                const verifyHashResult = CryptoJS.SHA256(combinedSeed).toString();
-                const index = parseInt(verifyHashResult.substring(0, 8), 16) % names.length;
-                verifyResult.innerHTML = `Winner for verification: ${names[index]}`;
-            } else {
-                verifyResult.innerHTML = "Please provide a valid server seed and client seed.";
-            }
-        });
-
-        // Gera Server Seed ao carregar a página
         generateServerSeed();
     </script>
-
-
-
 </body>
 
 </html>
