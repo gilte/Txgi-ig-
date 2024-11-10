@@ -5,15 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fair Giveaway Roulette with Server Seed</title>
     <style>
+        /* Estilos CSS para centralização e design básico */
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #000000, #000000);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
+        body { font-family: Arial, sans-serif; background: linear-gradient(to right, #000000, #000000);
+               display: flex; align-items: center; justify-content: center; min-height: 100vh; color: #fff; }
         .container { text-align: center; color: #fff; }
         h1 { font-size: 2em; margin-bottom: 1em; }
         .input-area, .output-area { margin-bottom: 1em; }
@@ -21,29 +16,15 @@
             padding: 0.6em; border-radius: 5px; border: 1px solid #ff758c;
             width: 80%; max-width: 300px; margin-bottom: 1em; color: #333;
         }
-        .roulette {
-            border: 4px solid #fff; border-radius: 50%;
-            width: 300px; height: 300px; display: flex;
-            align-items: center; justify-content: center;
-            overflow: hidden; margin: 0 auto 1em; position: relative;
-        }
-        .names-wheel {
-            font-size: 1.5em; color: #ffedee;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            text-align: center; animation: spin 0.5s linear infinite;
-        }
-        .button {
-            background: #ffedee; color: #000000; border: none;
-            padding: 0.8em 1.2em; font-size: 1em;
-            border-radius: 5px; cursor: pointer;
-            transition: background 0.3s; margin: 0.5em;
-        }
+        .roulette { border: 4px solid #fff; border-radius: 50%; width: 300px; height: 300px;
+                    display: flex; align-items: center; justify-content: center; overflow: hidden; margin: 0 auto 1em; }
+        .names-wheel { font-size: 1.5em; color: #ffedee; display: flex; flex-direction: column; align-items: center; }
+        .button { background: #ffedee; color: #000000; border: none; padding: 0.8em 1.2em; font-size: 1em;
+                  border-radius: 5px; cursor: pointer; transition: background 0.3s; margin: 0.5em; }
         .button:hover { background: #fff; }
         @media (max-width: 600px) { .roulette { width: 250px; height: 250px; } }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 <div class="container">
@@ -61,9 +42,6 @@
         <p id="serverSeedReveal" style="display:none;">Server Seed (Revelado pós-sorteio): <span id="serverSeed"></span></p>
         <p id="clientSeedOutput">Client Seed (timestamp): <span id="clientSeed"></span></p>
         <p id="finalHashOutput">Final Hash Used: <span id="finalHash"></span></p>
-        <input type="text" id="verifyHash" class="output-text" placeholder="Enter server seed & timestamp to verify">
-        <button id="verifyBtn" class="button">Verify Winner</button>
-        <p id="verifyResult"></p>
     </div>
     <div class="controls">
         <button id="startBtn" class="button">Start Draw</button>
@@ -78,9 +56,6 @@
     const serverSeedReveal = document.getElementById("serverSeed");
     const clientSeedOutput = document.getElementById("clientSeed");
     const finalHashOutput = document.getElementById("finalHash");
-    const verifyBtn = document.getElementById("verifyBtn");
-    const verifyHash = document.getElementById("verifyHash");
-    const verifyResult = document.getElementById("verifyResult");
 
     let interval;
     let serverSeed;
@@ -88,8 +63,8 @@
     let clientSeed;
     let finalHash;
 
-    // Define manual winner index for didactic purposes (-1 for random)
-    const manualWinnerIndex = 2; // Set index for winner or -1 for random
+    // Defina o índice manual do vencedor (-1 para aleatório)
+    const manualWinnerIndex = 1; // Define aqui o índice desejado para fins didáticos
 
     function generateServerSeed() {
         serverSeed = Math.random().toString(36).substring(2);
@@ -140,7 +115,7 @@
             clientSeedOutput.innerHTML = clientSeed;
             finalHashOutput.innerHTML = finalHash;
             namesWheel.innerHTML = `The winner: ${result.winner}`;
-        }, 60000);
+        }, 5000);
     });
 
     resetBtn.addEventListener("click", () => {
@@ -148,23 +123,8 @@
         namesWheel.innerHTML = "";
         clientSeedOutput.innerHTML = "";
         finalHashOutput.innerHTML = "";
-        verifyResult.innerHTML = "";
-        verifyHash.value = "";
         document.getElementById("serverSeedReveal").style.display = "none";
         generateServerSeed();
-    });
-
-    verifyBtn.addEventListener("click", () => {
-        const names = getNamesFromInput();
-        const [inputServerSeed, inputClientSeed] = verifyHash.value.split(" ");
-        if (inputServerSeed && inputClientSeed) {
-            const combinedSeed = inputServerSeed + inputClientSeed;
-            const verifyHashResult = CryptoJS.SHA256(combinedSeed).toString();
-            const index = parseInt(verifyHashResult.substring(0, 8), 16) % names.length;
-            verifyResult.innerHTML = `Winner for verification: ${names[index]}`;
-        } else {
-            verifyResult.innerHTML = "Please provide a valid server seed and client seed.";
-        }
     });
 
     generateServerSeed();
