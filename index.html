@@ -1,3 +1,4 @@
+quero esse aqui manipulado
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fair Giveaway Roulette with Server Seed</title>
     <style>
-        /* Estilos CSS para centralização e design básico */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -20,7 +20,6 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            color: #fff;
         }
 
         .container {
@@ -33,31 +32,21 @@
             margin-bottom: 1em;
         }
 
-        .input-text {
-            padding: 0.8em;
-            border-radius: 8px;
+        .input-area,
+        .output-area {
+            margin-bottom: 1em;
+        }
+
+        .input-text,
+        .output-text {
+            padding: 0.6em;
+            border-radius: 5px;
             border: 1px solid #ff758c;
-            background-color: #ffffff;
-            width: 90%;
-            max-width: 500px;
+            width: 80%;
+            max-width: 300px;
             margin-bottom: 1em;
             color: #333;
-            font-size: 1em;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-
-       
-
-        .input-area {
-            
-            padding: 1.5em;
-           
-            width: 100%;
-            max-width: 550px;
-            margin: 1em auto;
-        }
-
 
         .roulette {
             border: 4px solid #fff;
@@ -69,6 +58,7 @@
             justify-content: center;
             overflow: hidden;
             margin: 0 auto 1em;
+            position: relative;
         }
 
         .names-wheel {
@@ -77,6 +67,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            text-align: center;
+            animation: spin 0.5s linear infinite;
         }
 
         .button {
@@ -103,6 +96,8 @@
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 </head>
 
 <body>
@@ -122,6 +117,10 @@
                     id="serverSeed"></span></p>
             <p id="clientSeedOutput">Client Seed (timestamp): <span id="clientSeed"></span></p>
             <p id="finalHashOutput">Final Hash Used: <span id="finalHash"></span></p>
+            <input type="text" id="verifyHash" class="output-text"
+                placeholder="Enter server seed & timestamp to verify">
+            <button id="verifyBtn" class="button">Verify Winner</button>
+            <p id="verifyResult"></p>
         </div>
         <div class="controls">
             <button id="startBtn" class="button">Start Draw</button>
@@ -136,6 +135,9 @@
         const serverSeedReveal = document.getElementById("serverSeed");
         const clientSeedOutput = document.getElementById("clientSeed");
         const finalHashOutput = document.getElementById("finalHash");
+        const verifyBtn = document.getElementById("verifyBtn");
+        const verifyHash = document.getElementById("verifyHash");
+        const verifyResult = document.getElementById("verifyResult");
 
         let interval;
         let serverSeed;
@@ -143,32 +145,25 @@
         let clientSeed;
         let finalHash;
 
-        // Defina o índice manual do vencedor (-1 para aleatório)
-        const manualWinnerIndex = 1; // Define aqui o índice desejado para fins didáticos
-
+        // Gerar Server Seed e Server Seed Hash
         function generateServerSeed() {
             serverSeed = Math.random().toString(36).substring(2);
             serverSeedHash = CryptoJS.SHA256(serverSeed).toString();
             serverSeedHashDisplay.innerHTML = serverSeedHash;
         }
 
+        // Função para obter os nomes da entrada de texto
         function getNamesFromInput() {
             const namesInput = document.getElementById("namesInput").value;
             return namesInput.split(',').map(name => name.trim()).filter(name => name !== "");
         }
 
+        // Função para escolher um vencedor combinando Server Seed + Client Seed
         function chooseWinner(names) {
-            clientSeed = Date.now().toString();
-            const combinedSeed = serverSeed + clientSeed;
-            finalHash = CryptoJS.SHA256(combinedSeed).toString();
-
-            let index;
-            if (manualWinnerIndex >= 0 && manualWinnerIndex < names.length) {
-                index = manualWinnerIndex;  // Define o vencedor manualmente
-            } else {
-                index = parseInt(finalHash.substring(0, 8), 16) % names.length;
-            }
-
+            clientSeed = Date.now().toString(); // Certifique-se de que o client seed seja uma string
+            const combinedSeed = serverSeed + clientSeed; // Combina o server seed e o client seed
+            finalHash = CryptoJS.SHA256(combinedSeed).toString(); // Gera o hash
+            const index = parseInt(finalHash.substring(0, 8), 16) % names.length; // Calcula o índice do vencedor
             return { winner: names[index], finalHash, clientSeed };
         }
 
@@ -179,23 +174,26 @@
                 return;
             }
 
+            // Atualizar animação de sorteio
             namesWheel.style.animation = "spin 1s linear infinite";
             interval = setInterval(() => {
                 const randomIndex = Math.floor(Math.random() * names.length);
                 namesWheel.innerHTML = names[randomIndex];
             }, 100);
 
+            // Sorteio após 1 minuto
             setTimeout(() => {
                 clearInterval(interval);
                 namesWheel.style.animation = "none";
 
-                const result = chooseWinner(names);
+                const result = chooseWinner(names); // Chama a função para escolher o vencedor
+                // Revelar Server Seed e mostrar resultados
                 document.getElementById("serverSeedReveal").style.display = "block";
                 serverSeedReveal.innerHTML = serverSeed;
                 clientSeedOutput.innerHTML = clientSeed;
                 finalHashOutput.innerHTML = finalHash;
                 namesWheel.innerHTML = `The winner: ${result.winner}`;
-            }, 20000);
+            }, 60000); // Ajuste o tempo conforme necessário
         });
 
         resetBtn.addEventListener("click", () => {
@@ -203,12 +201,32 @@
             namesWheel.innerHTML = "";
             clientSeedOutput.innerHTML = "";
             finalHashOutput.innerHTML = "";
+            verifyResult.innerHTML = "";
+            verifyHash.value = "";
             document.getElementById("serverSeedReveal").style.display = "none";
             generateServerSeed();
         });
 
+        // Verificação de vencedor com o Server Seed e o Client Seed
+        verifyBtn.addEventListener("click", () => {
+            const names = getNamesFromInput();
+            const [inputServerSeed, inputClientSeed] = verifyHash.value.split(" ");
+            if (inputServerSeed && inputClientSeed) {
+                const combinedSeed = inputServerSeed + inputClientSeed;
+                const verifyHashResult = CryptoJS.SHA256(combinedSeed).toString();
+                const index = parseInt(verifyHashResult.substring(0, 8), 16) % names.length;
+                verifyResult.innerHTML = `Winner for verification: ${names[index]}`;
+            } else {
+                verifyResult.innerHTML = "Please provide a valid server seed and client seed.";
+            }
+        });
+
+        // Gera Server Seed ao carregar a página
         generateServerSeed();
     </script>
+
+
+
 </body>
 
 </html>
