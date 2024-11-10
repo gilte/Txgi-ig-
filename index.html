@@ -116,27 +116,23 @@
                 <!-- Nomes serão exibidos aqui -->
             </div>
         </div>
-        <div class="output-area">
-            <p id="serverSeedHashDisplay">Server Seed Hash (Pre-sorteio): <span id="serverSeedHash"></span></p>
-            <p id="serverSeedReveal" style="display:none;">Server Seed (Revelado pós-sorteio): <span
-                    id="serverSeed"></span></p>
-            <p id="clientSeedOutput">Client Seed (timestamp): <span id="clientSeed"></span></p>
-            <p id="finalHashOutput">Final Hash Used: <span id="finalHash"></span></p>
-        </div>
-
-<
-        <div class="controls">
-            <button id="startBtn" class="button">Start Draw</button>
-            <button id="resetBtn" class="button">Reset</button>
-        </div>
-        input type="text" id="verifyHash" class="output-text" placeholder="Enter server seed & timestamp to verify">
+      <div class="output-area">
+           <p id="serverSeedHashDisplay">Server Seed Hash (Pre-sorteio): <span id="serverSeedHash"></span></p>
+           <p id="serverSeedReveal" style="display:none;">Server Seed (Revelado pós-sorteio): <span id="serverSeed"></span></p>
+           <p id="clientSeedOutput">Client Seed (timestamp): <span id="clientSeed"></span></p>
+           <p id="finalHashOutput">Final Hash Used: <span id="finalHash"></span></p>
+           <input type="text" id="verifyHash" class="output-text" placeholder="Enter server seed & timestamp to verify">
            <button id="verifyBtn" class="button">Verify Winner</button>
            <p id="verifyResult"></p>
-</div>
+       </div>
+       <div class="controls">
+           <button id="startBtn" class="button">Start Draw</button>
+           <button id="resetBtn" class="button">Reset</button>
+       </div>
+   </div>
 
 
-    
-    <script>
+            <script>
         const namesWheel = document.getElementById("namesWheel");
         const startBtn = document.getElementById("startBtn");
         const resetBtn = document.getElementById("resetBtn");
