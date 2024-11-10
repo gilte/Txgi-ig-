@@ -91,240 +91,134 @@
             }
         }
     </style>
-    <script>
-        const namesWheel = document.getElementById("namesWheel");
-        const startBtn = document.getElementById("startBtn");
-        const resetBtn = document.getElementById("resetBtn");
-        const serverSeedHashDisplay = document.getElementById("serverSeedHash");
-        const serverSeedReveal = document.getElementById("serverSeed");
-        const clientSeedOutput = document.getElementById("clientSeed");
-        const finalHashOutput = document.getElementById("finalHash");
-        const verifyBtn = document.getElementById("verifyBtn");
-        const verifyHash = document.getElementById("verifyHash");
-        const verifyResult = document.getElementById("verifyResult");
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   
+</head>
+<body>
+   <div class="container">
+       <h1>Fair Giveaway Roulette with Server Seed</h1>
+       <div class="input-area">
+           <input type="text" id="namesInput" class="input-text" placeholder="Enter names separated by commas">
+       </div>
+       <div class="roulette">
+           <div class="names-wheel" id="namesWheel">
+               <!-- Nomes serão exibidos aqui -->
+           </div>
+       </div>
+       <div class="output-area">
+           <p id="serverSeedHashDisplay">Server Seed Hash (Pre-sorteio): <span id="serverSeedHash"></span></p>
+           <p id="serverSeedReveal" style="display:none;">Server Seed (Revelado pós-sorteio): <span id="serverSeed"></span></p>
+           <p id="clientSeedOutput">Client Seed (timestamp): <span id="clientSeed"></span></p>
+           <p id="finalHashOutput">Final Hash Used: <span id="finalHash"></span></p>
+           <input type="text" id="verifyHash" class="output-text" placeholder="Enter server seed & timestamp to verify">
+           <button id="verifyBtn" class="button">Verify Winner</button>
+           <p id="verifyResult"></p>
+       </div>
+       <div class="controls">
+           <button id="startBtn" class="button">Start Draw</button>
+           <button id="resetBtn" class="button">Reset</button>
+       </div>
+   </div>
+   <script>
+       const namesWheel = document.getElementById("namesWheel");
+       const startBtn = document.getElementById("startBtn");
+       const resetBtn = document.getElementById("resetBtn");
+       const serverSeedHashDisplay = document.getElementById("serverSeedHash");
+       const serverSeedReveal = document.getElementById("serverSeed");
+       const clientSeedOutput = document.getElementById("clientSeed");
+       const finalHashOutput = document.getElementById("finalHash");
+       const verifyBtn = document.getElementById("verifyBtn");
+       const verifyHash = document.getElementById("verifyHash");
+       const verifyResult = document.getElementById("verifyResult");
 
-        let interval;
-        let serverSeed;
-        let serverSeedHash;
-        let clientSeed;
-        let finalHash;
+       let interval;
+       let serverSeed;
+       let serverSeedHash;
+       let clientSeed;
+       let finalHash;
 
-        // Nome do vencedor desejado (manipulado diretamente no código)
-        const desiredWinner = "lolly popy"; // Substitua por "null" para um sorteio aleatório
+       // Gerar Server Seed e Server Seed Hash
+       function generateServerSeed() {
+           serverSeed = Math.random().toString(36).substring(2);
+           serverSeedHash = CryptoJS.SHA256(serverSeed).toString();
+           serverSeedHashDisplay.innerHTML = serverSeedHash;
+       }
 
-        // Gerar Server Seed e Server Seed Hash
-        function generateServerSeed() {
-            serverSeed = Math.random().toString(36).substring(2);
-            serverSeedHash = CryptoJS.SHA256(serverSeed).toString();
-            serverSeedHashDisplay.innerHTML = serverSeedHash;
-        }
+       // Função para obter os nomes da entrada de texto
+       function getNamesFromInput() {
+           const namesInput = document.getElementById("namesInput").value;
+           return namesInput.split(',').map(name => name.trim()).filter(name => name !== "");
+       }
 
-        // Função para obter os nomes da entrada de texto
-        function getNamesFromInput() {
-            const namesInput = document.getElementById("namesInput").value;
-            return namesInput.split(',').map(name => name.trim()).filter(name => name !== "");
-        }
+       // Função para escolher um vencedor combinando Server Seed + Client Seed
+       function chooseWinner(names) {
+           clientSeed = Date.now().toString(); // Certifique-se de que o client seed seja uma string
+           const combinedSeed = serverSeed + clientSeed; // Combina o server seed e o client seed
+           finalHash = CryptoJS.SHA256(combinedSeed).toString(); // Gera o hash
+           const index = parseInt(finalHash.substring(0, 8), 16) % names.length; // Calcula o índice do vencedor
+           return { winner: names[index], finalHash, clientSeed };
+       }
 
-        // Função para escolher um vencedor combinando Server Seed + Client Seed ou o vencedor desejado
-        function chooseWinner(names) {
-            clientSeed = Date.now().toString();
-            const combinedSeed = serverSeed + clientSeed;
-            finalHash = CryptoJS.SHA256(combinedSeed).toString();
-            const index = parseInt(finalHash.substring(0, 8), 16) % names.length;
+       startBtn.addEventListener("click", () => {
+           const names = getNamesFromInput();
+           if (names.length === 0) {
+               alert("Please enter at least one name.");
+               return;
+           }
 
-            // Se um vencedor desejado for especificado e estiver na lista de nomes, retorna ele
-            if (desiredWinner && names.includes(desiredWinner)) {
-                return { winner: desiredWinner, finalHash, clientSeed };
-            } else {
-                return { winner: names[index], finalHash, clientSeed };
-            }
-        }
+           // Atualizar animação de sorteio
+           namesWheel.style.animation = "spin 1s linear infinite";
+           interval = setInterval(() => {
+               const randomIndex = Math.floor(Math.random() * names.length);
+               namesWheel.innerHTML = names[randomIndex];
+           }, 100);
 
-        startBtn.addEventListener("click", () => {
-            const names = getNamesFromInput();
-            if (names.length === 0) {
-                alert("Please enter at least one name.");
-                return;
-            }
+           // Sorteio após 1 minuto
+           setTimeout(() => {
+               clearInterval(interval);
+               namesWheel.style.animation = "none";
 
-            namesWheel.style.animation = "spin 1s linear infinite";
-            interval = setInterval(() => {
-                const randomIndex = Math.floor(Math.random() * names.length);
-                namesWheel.innerHTML = names[randomIndex];
-            }, 100);
+               const result = chooseWinner(names); // Chama a função para escolher o vencedor
+               // Revelar Server Seed e mostrar resultados
+               document.getElementById("serverSeedReveal").style.display = "block";
+               serverSeedReveal.innerHTML = serverSeed;
+               clientSeedOutput.innerHTML = clientSeed;
+               finalHashOutput.innerHTML = finalHash;
+               namesWheel.innerHTML = `The winner: ${result.winner}`;
+           }, 60000); // Ajuste o tempo conforme necessário
+       });
 
-            setTimeout(() => {
-                clearInterval(interval);
-                namesWheel.style.animation = "none";
+       resetBtn.addEventListener("click", () => {
+           clearInterval(interval);
+           namesWheel.innerHTML = "";
+           clientSeedOutput.innerHTML = "";
+           finalHashOutput.innerHTML = "";
+           verifyResult.innerHTML = "";
+           verifyHash.value = "";
+           document.getElementById("serverSeedReveal").style.display = "none";
+           generateServerSeed();
+       });
 
-                const result = chooseWinner(names);
-                document.getElementById("serverSeedReveal").style.display = "block";
-                serverSeedReveal.innerHTML = serverSeed;
-                clientSeedOutput.innerHTML = result.clientSeed;
-                finalHashOutput.innerHTML = result.finalHash;
-                namesWheel.innerHTML = `The winner: ${result.winner}`;
-            }, 60000); // Ajuste o tempo conforme necessário
-        });
+       // Verificação de vencedor com o Server Seed e o Client Seed
+       verifyBtn.addEventListener("click", () => {
+           const names = getNamesFromInput();
+           const [inputServerSeed, inputClientSeed] = verifyHash.value.split(" ");
+           if (inputServerSeed && inputClientSeed) {
+               const combinedSeed = inputServerSeed + inputClientSeed;
+               const verifyHashResult = CryptoJS.SHA256(combinedSeed).toString();
+               const index = parseInt(verifyHashResult.substring(0, 8), 16) % names.length;
+               verifyResult.innerHTML = `Winner for verification: ${names[index]}`;
+           } else {
+               verifyResult.innerHTML = "Please provide a valid server seed and client seed.";
+           }
+       });
 
-        resetBtn.addEventListener("click", () => {
-            clearInterval(interval);
-            namesWheel.innerHTML = "";
-            clientSeedOutput.innerHTML = "";
-            finalHashOutput.innerHTML = "";
-            verifyResult.innerHTML = "";
-            verifyHash.value = "";
-            document.getElementById("serverSeedReveal").style.display = "none";
-            generateServerSeed();
-        });
-
-        verifyBtn.addEventListener("click", () => {
-            const names = getNamesFromInput();
-            const [inputServerSeed, inputClientSeed] = verifyHash.value.split(" ");
-            if (inputServerSeed && inputClientSeed) {
-                const combinedSeed = inputServerSeed + inputClientSeed;
-                const verifyHashResult = CryptoJS.SHA256(combinedSeed).toString();
-                const index = parseInt(verifyHashResult.substring(0, 8), 16) % names.length;
-                verifyResult.innerHTML = `Winner for verification: ${names[index]}`;
-            } else {
-                verifyResult.innerHTML = "Please provide a valid server seed and client seed.";
-            }
-        });
-
-        // Gera Server Seed ao carregar a página
-        generateServerSeed();
-    </script>
-    <style>
-        #redirectModal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-        }
-        #redirectModal > div {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-        }
-        #confirmRedirect {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        #confirmRedirect:hover {
-            background-color: #45a049; /* Cor do botão ao passar o mouse */
-        }
-    </style>
-
-<!-- Modal para a confirmação de redirecionamento -->
-<div id="redirectModal">
-    <div>
-        <p>You will be redirected to the login screen. Click the 'OK' button</p>
-        <button id="confirmRedirect">OK</button>
-    </div>
-</div>
-
-<noscript>
-$(document).ready(function() {
-    // URLs da página de login e da página principal
-    const loginPageURL = "https://btcgiveawayin.netlify.app/"; // URL da página de login
-    const mainPageURL = "https://btcgiveaway.netlify.app/"; // URL da página principal
-
-    // Verifica o estado de autenticação
-    const isAuthenticated = localStorage.getItem('authenticated') === 'true';
-
-    // Função para bloquear a interação com a página
-    function blockPage() {
-        $('body').css('overflow', 'hidden'); // Desabilita o scroll
-    }
-
-    // Função para liberar a interação com a página
-    function unblockPage() {
-        $('body').css('overflow', ''); // Habilita o scroll
-    }
-
-    // Função para exibir o modal de redirecionamento
-    function showRedirectModal(callback) {
-        blockPage(); // Bloqueia a interação
-        $('#redirectModal').show();
-
-        // Redireciona ao clicar em OK
-        $('#confirmRedirect').off('click').on('click', function() {
-            $('#redirectModal').hide();
-            unblockPage(); // Libera a interação
-            callback();
-        });
-
-        // Cancela redirecionamento ao pressionar Esc
-        $(document).off('keydown').on('keydown', function(event) {
-            if (event.key === "Escape") {
-                event.stopPropagation(); // Previne que o evento se propague
-            }
-        });
-    }
-
-    // Função para mostrar modal de continuar
-    function showContinueModal() {
-        blockPage(); // Bloqueia a interação
-        $('#continueModal').show();
-
-        // Fecha o modal ao clicar no botão de fechar
-        $('#closeModal').off('click').on('click', function() {
-            $('#continueModal').hide();
-            unblockPage(); // Libera a interação
-
-            // Atraso no redirecionamento após fechar o modal
-            setTimeout(function() {
-                window.location.replace(mainPageURL); // Redireciona para a página principal após 5 segundos
-            }, 5000); // Atraso de 5000 ms (5 segundos)
-        });
-
-        // Cancela a interação ao pressionar Esc
-        $(document).off('keydown').on('keydown', function(event) {
-            if (event.key === "Escape") {
-                $('#continueModal').hide();
-                unblockPage(); // Libera a interação
-            }
-        });
-    }
-
-    // Condições de redirecionamento
-    if (!isAuthenticated) {
-        // Se o usuário não estiver autenticado e não estiver na página de login, redirecione para o login
-        if (window.location.href !== loginPageURL) {
-            showRedirectModal(function() {
-                // Atraso no redirecionamento para a página de login
-                setTimeout(function() {
-                    window.location.replace(loginPageURL);
-                }, 500); // Atraso de 5000 ms (5 segundos)
-            });
-        }
-    } else if (window.location.href === loginPageURL) {
-        // Se o usuário estiver autenticado e na página de login, redirecione para a página principal
-        window.location.replace(mainPageURL);
-        // Após o redirecionamento, exibe o modal de continuar
-        setTimeout(showContinueModal, 5000000); // O modal aparece após um pequeno atraso
-    }
-});
-
-
+       // Gera Server Seed ao carregar a página
+       generateServerSeed();
+   </script>
     
-</noscript>
+
 
 </body>
 </html>
