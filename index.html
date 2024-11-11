@@ -245,18 +245,26 @@
         });
 
         // Verificação de vencedor com o Server Seed e o Client Seed
-        verifyBtn.addEventListener("click", () => {
-            const names = getNamesFromInput();
-            const [inputServerSeed, inputClientSeed] = verifyHash.value.split(" ");
-            if (inputServerSeed && inputClientSeed) {
-                const combinedSeed = inputServerSeed + inputClientSeed;
-                const verifyHashResult = CryptoJS.SHA256(combinedSeed).toString();
-                const index = parseInt(verifyHashResult.substring(0, 8), 16) % names.length;
-                verifyResult.innerHTML = `Winner for verification: ${names[index]}`;
-            } else {
-                verifyResult.innerHTML = "Please provide a valid server seed and client seed.";
-            }
-        });
+        // Verificação de vencedor com o Server Seed e o Client Seed
+verifyBtn.addEventListener("click", () => {
+    const names = getNamesFromInput();
+    if (names.length === 0) {
+        verifyResult.innerHTML = "Please enter names for verification.";
+        return;
+    }
+    
+    const verifyInput = verifyHash.value.trim();
+    const [inputServerSeed, inputClientSeed] = verifyInput.split(/\s+/); // Permitir qualquer espaço como separador
+
+    if (inputServerSeed && inputClientSeed) {
+        const combinedSeed = inputServerSeed + inputClientSeed;
+        const verifyHashResult = CryptoJS.SHA256(combinedSeed).toString();
+        const index = parseInt(verifyHashResult.substring(0, 8), 16) % names.length;
+        verifyResult.innerHTML = `Winner for verification: ${names[index]}`;
+    } else {
+        verifyResult.innerHTML = "Please provide a valid server seed and client seed separated by a space.";
+    }
+});
 
         // Gera Server Seed ao carregar a página
         generateServerSeed();
